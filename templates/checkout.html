@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - E-Commerce Store{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Checkout Form -->
+    <div class="col-lg-7">
+        <h2 class="mb-4">
+            <i class="fas fa-credit-card me-2"></i>Checkout
+        </h2>
+        
+        <form method="POST" action="{{ url_for('checkout') }}">
+            {{ form.hidden_tag() }}
+            
+            <!-- Customer Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Customer Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.customer_name.label(class="form-label") }}
+                            {{ form.customer_name(class="form-control") }}
+                            {% for error in form.customer_name.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.customer_email.label(class="form-label") }}
+                            {{ form.customer_email(class="form-control") }}
+                            {% for error in form.customer_email.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        {{ form.customer_phone.label(class="form-label") }}
+                        {{ form.customer_phone(class="form-control") }}
+                        {% for error in form.customer_phone.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Shipping Address -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Shipping Address</h5>
+                </div>
+                <div class="card-body">
+                    {{ form.shipping_address.label(class="form-label") }}
+                    {{ form.shipping_address(class="form-control", rows="4", placeholder="Enter your full shipping address including street, city, state, and ZIP code") }}
+                    {% for error in form.shipping_address.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Payment Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Payment Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        This is a demo application. No actual payment will be processed.
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="card_number" class="form-label">Card Number</label>
+                            <input type="text" class="form-control" id="card_number" 
+                                   placeholder="1234 5678 9012 3456" readonly>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="expiry" class="form-label">Expiry Date</label>
+                            <input type="text" class="form-control" id="expiry" 
+                                   placeholder="MM/YY" readonly>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="cvv" class="form-label">CVV</label>
+                            <input type="text" class="form-control" id="cvv" 
+                                   placeholder="123" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('cart') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Cart
+                </a>
+                {{ form.submit(class="btn btn-success btn-lg") }}
+            </div>
+        </form>
+    </div>
+    
+    <!-- Order Summary -->
+    <div class="col-lg-5">
+        <div class="card sticky-top" style="top: 100px;">
+            <div class="card-header">
+                <h5 class="mb-0">Order Summary</h5>
+            </div>
+            <div class="card-body">
+                <!-- Cart Items -->
+                {% for item in cart_items %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex align-items-center">
+                        {% if item.image_url %}
+                        <img src="{{ item.image_url }}" class="rounded me-2" style="width: 40px; height: 40px; object-fit: cover;" alt="{{ item.name }}">
+                        {% endif %}
+                        <div>
+                            <h6 class="mb-0">{{ item.name }}</h6>
+                            <small class="text-muted">Qty: {{ item.quantity }}</small>
+                        </div>
+                    </div>
+                    <span class="text-success">${{ "%.2f"|format(item.price * item.quantity) }}</span>
+                </div>
+                {% endfor %}
+                
+                <hr>
+                
+                <!-- Order Totals -->
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Subtotal:</span>
+                    <span>${{ "%.2f"|format(total) }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Shipping:</span>
+                    <span class="text-success">
+                        {% if total >= 50 %}FREE{% else %}$9.99{% endif %}
+                    </span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Tax (8%):</span>
+                    <span>${{ "%.2f"|format(total * 0.08) }}</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <strong>Total:</strong>
+                    <strong class="text-success fs-5">
+                        ${{ "%.2f"|format(total + (0 if total >= 50 else 9.99) + (total * 0.08)) }}
+                    </strong>
+                </div>
+                
+                {% if total < 50 %}
+                <div class="alert alert-info small mt-3">
+                    <i class="fas fa-truck me-2"></i>
+                    Add ${{ "%.2f"|format(50 - total) }} more for free shipping!
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Security Information -->
+        <div class="card mt-3">
+            <div class="card-body text-center">
+                <i class="fas fa-shield-alt fa-2x text-success mb-2"></i>
+                <h6>Secure Checkout</h6>
+                <p class="small text-muted mb-0">Your information is protected with 256-bit SSL encryption.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

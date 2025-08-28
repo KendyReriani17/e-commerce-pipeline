@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Add Product - Admin{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-plus me-2"></i>Add New Product</h2>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Admin</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_products') }}">Products</a></li>
+                    <li class="breadcrumb-item active">Add Product</li>
+                </ol>
+            </nav>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin_add_product') }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <!-- Product Name -->
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label") }}
+                        {{ form.name(class="form-control") }}
+                        {% for error in form.name.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Description -->
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label") }}
+                        {{ form.description(class="form-control", rows="4") }}
+                        {% for error in form.description.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="row">
+                        <!-- Price -->
+                        <div class="col-md-6 mb-3">
+                            {{ form.price.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                {{ form.price(class="form-control") }}
+                            </div>
+                            {% for error in form.price.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Stock Quantity -->
+                        <div class="col-md-6 mb-3">
+                            {{ form.stock_quantity.label(class="form-label") }}
+                            {{ form.stock_quantity(class="form-control") }}
+                            {% for error in form.stock_quantity.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Category -->
+                    <div class="mb-3">
+                        {{ form.category_id.label(class="form-label") }}
+                        {{ form.category_id(class="form-select") }}
+                        {% for error in form.category_id.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                        <div class="form-text">
+                            Don't see the category you need? 
+                            <a href="{{ url_for('admin_add_category') }}" target="_blank">Add a new category</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Image URL -->
+                    <div class="mb-3">
+                        {{ form.image_url.label(class="form-label") }}
+                        {{ form.image_url(class="form-control", placeholder="https://example.com/image.jpg") }}
+                        {% for error in form.image_url.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                        <div class="form-text">Optional: Enter a URL for the product image</div>
+                    </div>
+                    
+                    <!-- Image Preview -->
+                    <div class="mb-3">
+                        <div id="image-preview" class="d-none">
+                            <label class="form-label">Image Preview</label>
+                            <div>
+                                <img id="preview-img" class="img-thumbnail" style="max-width: 200px; max-height: 200px;" alt="Preview">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Buttons -->
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('admin_products') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Products
+                        </a>
+                        {{ form.submit(class="btn btn-success") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const imageUrlInput = document.getElementById('image_url');
+    const previewDiv = document.getElementById('image-preview');
+    const previewImg = document.getElementById('preview-img');
+    
+    imageUrlInput.addEventListener('input', function() {
+        const url = this.value.trim();
+        
+        if (url) {
+            previewImg.src = url;
+            previewImg.onload = function() {
+                previewDiv.classList.remove('d-none');
+            };
+            previewImg.onerror = function() {
+                previewDiv.classList.add('d-none');
+            };
+        } else {
+            previewDiv.classList.add('d-none');
+        }
+    });
+});
+</script>
+{% endblock %}

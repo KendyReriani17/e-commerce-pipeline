@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Orders - E-Commerce Store{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-list me-2"></i>Order History</h2>
+    <a href="{{ url_for('products') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>Place New Order
+    </a>
+</div>
+
+{% if orders %}
+<div class="row">
+    {% for order in orders %}
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">{{ order.order_number }}</h5>
+                <span class="badge {% if order.status == 'pending' %}bg-warning{% elif order.status == 'confirmed' %}bg-info{% elif order.status == 'shipped' %}bg-primary{% elif order.status == 'delivered' %}bg-success{% else %}bg-secondary{% endif %}">
+                    {{ order.status.title() }}
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-sm-6">
+                        <h6 class="text-muted">Customer</h6>
+                        <p class="mb-0">{{ order.customer_name }}</p>
+                        <small class="text-muted">{{ order.customer_email }}</small>
+                    </div>
+                    <div class="col-sm-6">
+                        <h6 class="text-muted">Order Date</h6>
+                        <p class="mb-0">{{ order.created_at.strftime('%B %d, %Y') }}</p>
+                        <small class="text-muted">{{ order.created_at.strftime('%I:%M %p') }}</small>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-muted">Items ({{ order.items|length }})</h6>
+                    {% for item in order.items[:3] %}
+                    <div class="d-flex justify-content-between align-items-center py-1">
+                        <span>{{ item.product.name }} × {{ item.quantity }}</span>
+                        <small class="text-success">${{ "%.2f"|format(item.subtotal) }}</small>
+                    </div>
+                    {% endfor %}
+                    {% if order.items|length > 3 %}
+                    <small class="text-muted">... and {{ order.items|length - 3 }} more item(s)</small>
+                    {% endif %}
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="text-success mb-0">Total: ${{ "%.2f"|format(order.total_amount) }}</h5>
+                    <a href="{{ url_for('order_success', order_number=order.order_number) }}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-eye me-1"></i>View Details
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Order Status Timeline -->
+            <div class="card-footer bg-light">
+                <div class="row text-center small">
+                    <div class="col">
+                        <i class="fas fa-circle {% if order.status in ['pending', 'confirmed', 'shipped', 'delivered'] %}text-success{% else %}text-muted{% endif %}"></i>
+                        <br>Pending
+                    </div>
+                    <div class="col">
+                        <i class="fas fa-circle {% if order.status in ['confirmed', 'shipped', 'delivered'] %}text-success{% else %}text-muted{% endif %}"></i>
+                        <br>Confirmed
+                    </div>
+                    <div class="col">
+                        <i class="fas fa-circle {% if order.status in ['shipped', 'delivered'] %}text-success{% else %}text-muted{% endif %}"></i>
+                        <br>Shipped
+                    </div>
+                    <div class="col">
+                        <i class="fas fa-circle {% if order.status == 'delivered' %}text-success{% else %}text-muted{% endif %}"></i>
+                        <br>Delivered
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if pagination.pages > 1 %}
+<nav aria-label="Orders pagination">
+    <ul class="pagination justify-content-center">
+        {% if pagination.has_prev %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('orders', page=pagination.prev_num) }}">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+        </li>
+        {% endif %}
+        
+        {% for page_num in pagination.iter_pages() %}
+            {% if page_num %}
+                {% if page_num != pagination.page %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('orders', page=page_num) }}">{{ page_num }}</a>
+                </li>
+                {% else %}
+                <li class="page-item active">
+                    <span class="page-link">{{ page_num }}</span>
+                </li>
+                {% endif %}
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">...</span>
+            </li>
+            {% endif %}
+        {% endfor %}
+        
+        {% if pagination.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('orders', page=pagination.next_num) }}">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="text-center py-5">
+    <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+    <h3>No Orders Yet</h3>
+    <p class="text-muted mb-4">You haven't placed any orders yet. Start shopping to see your order history here.</p>
+    <a href="{{ url_for('products') }}" class="btn btn-primary">
+        <i class="fas fa-shopping-bag me-2"></i>Start Shopping
+    </a>
+</div>
+{% endif %}
+{% endblock %}

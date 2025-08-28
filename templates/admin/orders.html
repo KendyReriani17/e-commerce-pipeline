@@ -1,0 +1,402 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Orders - Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-list me-2"></i>Manage Orders</h2>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Admin</a></li>
+            <li class="breadcrumb-item active">Orders</li>
+        </ol>
+    </nav>
+</div>
+
+<!-- Filters -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <form method="GET" action="{{ url_for('admin_orders') }}">
+            <div class="input-group">
+                <select class="form-select" name="status" onchange="this.form.submit()">
+                    <option value="">All Orders</option>
+                    <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="confirmed" {% if status_filter == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                    <option value="shipped" {% if status_filter == 'shipped' %}selected{% endif %}>Shipped</option>
+                    <option value="delivered" {% if status_filter == 'delivered' %}selected{% endif %}>Delivered</option>
+                    <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="fas fa-filter"></i>
+                </button>
+                {% if status_filter %}
+                <a href="{{ url_for('admin_orders') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-times"></i>
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+    <div class="col-md-6 text-end">
+        <div class="btn-group">
+            <button type="button" class="btn btn-outline-info" onclick="window.print()">
+                <i class="fas fa-print me-2"></i>Print Report
+            </button>
+            <button type="button" class="btn btn-outline-success" onclick="exportOrders()">
+                <i class="fas fa-download me-2"></i>Export CSV
+            </button>
+        </div>
+    </div>
+</div>
+
+{% if orders %}
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Order #</th>
+                        <th>Customer</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>
+                            <strong>{{ order.order_number }}</strong>
+                            <br>
+                            <small class="text-muted">ID: {{ order.id }}</small>
+                        </td>
+                        <td>
+                            <div>
+                                <strong>{{ order.customer_name }}</strong>
+                                <br>
+                                <small class="text-muted">{{ order.customer_email }}</small>
+                                {% if order.customer_phone %}
+                                <br>
+                                <small class="text-muted">{{ order.customer_phone }}</small>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-info">{{ order.items|length }} items</span>
+                            <br>
+                            <small class="text-muted">
+                                {% for item in order.items[:2] %}
+                                {{ item.product.name }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                                {% if order.items|length > 2 %}...{% endif %}
+                            </small>
+                        </td>
+                        <td>
+                            <strong class="text-success">${{ "%.2f"|format(order.total_amount) }}</strong>
+                        </td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-sm {% if order.status == 'pending' %}btn-warning{% elif order.status == 'confirmed' %}btn-info{% elif order.status == 'shipped' %}btn-primary{% elif order.status == 'delivered' %}btn-success{% elif order.status == 'cancelled' %}btn-danger{% else %}btn-secondary{% endif %} dropdown-toggle" 
+                                        type="button" data-bs-toggle="dropdown">
+                                    {{ order.status.title() }}
+                                </button>
+                                <ul class="dropdown-menu">
+                                    {% if order.status != 'pending' %}
+                                    <li><a class="dropdown-item" href="{{ url_for('admin_update_order_status', id=order.id, status='pending') }}">
+                                        <i class="fas fa-clock me-2"></i>Pending
+                                    </a></li>
+                                    {% endif %}
+                                    {% if order.status != 'confirmed' %}
+                                    <li><a class="dropdown-item" href="{{ url_for('admin_update_order_status', id=order.id, status='confirmed') }}">
+                                        <i class="fas fa-check me-2"></i>Confirmed
+                                    </a></li>
+                                    {% endif %}
+                                    {% if order.status != 'shipped' %}
+                                    <li><a class="dropdown-item" href="{{ url_for('admin_update_order_status', id=order.id, status='shipped') }}">
+                                        <i class="fas fa-truck me-2"></i>Shipped
+                                    </a></li>
+                                    {% endif %}
+                                    {% if order.status != 'delivered' %}
+                                    <li><a class="dropdown-item" href="{{ url_for('admin_update_order_status', id=order.id, status='delivered') }}">
+                                        <i class="fas fa-check-circle me-2"></i>Delivered
+                                    </a></li>
+                                    {% endif %}
+                                    {% if order.status != 'cancelled' %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="{{ url_for('admin_update_order_status', id=order.id, status='cancelled') }}"
+                                           onclick="return confirm('Are you sure you want to cancel this order?')">
+                                        <i class="fas fa-times me-2"></i>Cancel
+                                    </a></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </td>
+                        <td>
+                            <div>{{ order.created_at.strftime('%m/%d/%Y') }}</div>
+                            <small class="text-muted">{{ order.created_at.strftime('%I:%M %p') }}</small>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button type="button" class="btn btn-outline-info" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#orderModal{{ order.id }}" 
+                                        title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <a href="{{ url_for('order_success', order_number=order.order_number) }}" 
+                                   class="btn btn-outline-secondary" 
+                                   title="Customer View" 
+                                   target="_blank">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Order Details Modal -->
+                    <div class="modal fade" id="orderModal{{ order.id }}" tabindex="-1">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Order Details - {{ order.order_number }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <h6>Customer Information</h6>
+                                            <p class="mb-1"><strong>Name:</strong> {{ order.customer_name }}</p>
+                                            <p class="mb-1"><strong>Email:</strong> {{ order.customer_email }}</p>
+                                            {% if order.customer_phone %}
+                                            <p class="mb-1"><strong>Phone:</strong> {{ order.customer_phone }}</p>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6>Order Information</h6>
+                                            <p class="mb-1"><strong>Order #:</strong> {{ order.order_number }}</p>
+                                            <p class="mb-1"><strong>Status:</strong> 
+                                                <span class="badge {% if order.status == 'pending' %}bg-warning{% elif order.status == 'confirmed' %}bg-info{% elif order.status == 'shipped' %}bg-primary{% elif order.status == 'delivered' %}bg-success{% else %}bg-secondary{% endif %}">
+                                                    {{ order.status.title() }}
+                                                </span>
+                                            </p>
+                                            <p class="mb-1"><strong>Date:</strong> {{ order.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <h6>Shipping Address</h6>
+                                        <p class="mb-0">{{ order.shipping_address }}</p>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <h6>Order Items</h6>
+                                        <div class="table-responsive">
+                                            <table class="table table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Product</th>
+                                                        <th>Price</th>
+                                                        <th>Quantity</th>
+                                                        <th>Subtotal</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for item in order.items %}
+                                                    <tr>
+                                                        <td>{{ item.product.name }}</td>
+                                                        <td>${{ "%.2f"|format(item.price) }}</td>
+                                                        <td>{{ item.quantity }}</td>
+                                                        <td class="text-success">${{ "%.2f"|format(item.subtotal) }}</td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                    <tr class="table-light">
+                                                        <th colspan="3">Total</th>
+                                                        <th class="text-success">${{ "%.2f"|format(order.total_amount) }}</th>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-outline-primary" onclick="printOrderDetails('{{ order.order_number }}')">
+                                        <i class="fas fa-print me-2"></i>Print
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if pagination.pages > 1 %}
+<nav aria-label="Orders pagination" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if pagination.has_prev %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('admin_orders', page=pagination.prev_num, status=status_filter) }}">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+        </li>
+        {% endif %}
+        
+        {% for page_num in pagination.iter_pages() %}
+            {% if page_num %}
+                {% if page_num != pagination.page %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('admin_orders', page=page_num, status=status_filter) }}">{{ page_num }}</a>
+                </li>
+                {% else %}
+                <li class="page-item active">
+                    <span class="page-link">{{ page_num }}</span>
+                </li>
+                {% endif %}
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">...</span>
+            </li>
+            {% endif %}
+        {% endfor %}
+        
+        {% if pagination.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('admin_orders', page=pagination.next_num, status=status_filter) }}">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="text-center py-5">
+    <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+    <h3>No Orders Found</h3>
+    {% if status_filter %}
+    <p class="text-muted">No orders match the selected status filter.</p>
+    <a href="{{ url_for('admin_orders') }}" class="btn btn-outline-primary">
+        <i class="fas fa-refresh me-2"></i>View All Orders
+    </a>
+    {% else %}
+    <p class="text-muted">No orders have been placed yet.</p>
+    <a href="{{ url_for('products') }}" class="btn btn-primary">
+        <i class="fas fa-shopping-bag me-2"></i>Visit Store
+    </a>
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- Order Statistics -->
+{% if orders %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-2">
+                        <div class="text-warning">
+                            <i class="fas fa-clock fa-2x"></i>
+                            <h4 class="mt-2">{{ orders|selectattr("status", "equalto", "pending")|list|length }}</h4>
+                            <small>Pending</small>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="text-info">
+                            <i class="fas fa-check fa-2x"></i>
+                            <h4 class="mt-2">{{ orders|selectattr("status", "equalto", "confirmed")|list|length }}</h4>
+                            <small>Confirmed</small>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="text-primary">
+                            <i class="fas fa-truck fa-2x"></i>
+                            <h4 class="mt-2">{{ orders|selectattr("status", "equalto", "shipped")|list|length }}</h4>
+                            <small>Shipped</small>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="text-success">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                            <h4 class="mt-2">{{ orders|selectattr("status", "equalto", "delivered")|list|length }}</h4>
+                            <small>Delivered</small>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="text-danger">
+                            <i class="fas fa-times fa-2x"></i>
+                            <h4 class="mt-2">{{ orders|selectattr("status", "equalto", "cancelled")|list|length }}</h4>
+                            <small>Cancelled</small>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="text-success">
+                            <i class="fas fa-dollar-sign fa-2x"></i>
+                            <h4 class="mt-2">${{ "%.0f"|format(orders|sum(attribute="total_amount")) }}</h4>
+                            <small>Total Value</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+function exportOrders() {
+    // Simple CSV export functionality
+    const orders = {{ orders|tojson if orders else '[]' }};
+    if (orders.length === 0) {
+        alert('No orders to export');
+        return;
+    }
+    
+    let csv = 'Order Number,Customer Name,Email,Total Amount,Status,Date\n';
+    orders.forEach(order => {
+        const date = new Date(order.created_at).toLocaleDateString();
+        csv += `"${order.order_number}","${order.customer_name}","${order.customer_email}","$${order.total_amount}","${order.status}","${date}"\n`;
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'orders_export.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+
+function printOrderDetails(orderNumber) {
+    const modalContent = document.querySelector(`#orderModal${orderNumber.split('-')[1]} .modal-content`);
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html>
+            <head>
+                <title>Order Details - ${orderNumber}</title>
+                <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+            </head>
+            <body class="p-3">
+                ${modalContent.innerHTML}
+                <script>window.print(); window.close();</script>
+            </body>
+        </html>
+    `);
+    printWindow.document.close();
+}
+</script>
+{% endblock %}

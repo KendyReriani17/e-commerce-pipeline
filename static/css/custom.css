@@ -1,0 +1,419 @@
+/* Custom CSS for E-Commerce Store */
+/* Following Bootstrap dark theme guidelines */
+
+:root {
+  --bs-border-radius: 0.5rem;
+  --product-image-height: 200px;
+  --card-hover-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
+}
+
+/* Global Styles */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
+}
+
+/* Navigation enhancements */
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.navbar-nav .nav-link {
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+  color: var(--bs-primary) !important;
+}
+
+/* Hero section */
+.hero-section {
+  background: linear-gradient(135deg, var(--bs-primary), var(--bs-info));
+  border-radius: var(--bs-border-radius);
+}
+
+/* Product cards */
+.product-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid var(--bs-border-color);
+  overflow: hidden;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--card-hover-shadow);
+}
+
+.product-image {
+  height: var(--product-image-height);
+  width: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.05);
+}
+
+/* Category cards */
+.category-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid var(--bs-border-color);
+}
+
+.category-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--card-hover-shadow);
+}
+
+/* Form enhancements */
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+}
+
+.btn {
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Cart badge */
+.navbar .badge {
+  font-size: 0.75rem;
+  transform: translate(-50%, -50%);
+}
+
+/* Price styling */
+.text-success {
+  font-weight: 600;
+}
+
+/* Alert enhancements */
+.alert {
+  border: none;
+  border-radius: var(--bs-border-radius);
+}
+
+.alert-dismissible .btn-close {
+  padding: 1rem;
+}
+
+/* Table enhancements */
+.table {
+  --bs-table-bg: transparent;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(var(--bs-primary-rgb), 0.1);
+}
+
+/* Badge styling */
+.badge {
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+}
+
+/* Modal enhancements */
+.modal-content {
+  border: none;
+  border-radius: var(--bs-border-radius);
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.modal-footer {
+  border-top: 1px solid var(--bs-border-color);
+}
+
+/* Pagination */
+.pagination .page-link {
+  border: 1px solid var(--bs-border-color);
+  color: var(--bs-body-color);
+}
+
+.pagination .page-link:hover {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+  color: white;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  background-color: transparent;
+  padding: 0;
+  margin-bottom: 0;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  color: var(--bs-secondary);
+}
+
+/* Footer */
+footer {
+  margin-top: auto;
+}
+
+footer a:hover {
+  color: var(--bs-primary) !important;
+}
+
+/* Scroll to top button */
+.scroll-to-top {
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.scroll-to-top:hover {
+  opacity: 1;
+}
+
+/* Loading states */
+.btn:disabled {
+  opacity: 0.7;
+}
+
+/* Image placeholders */
+.image-placeholder {
+  background-color: var(--bs-secondary-bg);
+  color: var(--bs-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--product-image-height);
+}
+
+/* Order status timeline */
+.status-timeline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem 0;
+}
+
+.status-step {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+
+.status-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -50%;
+  width: 100%;
+  height: 2px;
+  background-color: var(--bs-border-color);
+  z-index: 1;
+}
+
+.status-step.active:not(:last-child)::after {
+  background-color: var(--bs-success);
+}
+
+.status-step .step-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: var(--bs-secondary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.status-step.active .step-icon {
+  background-color: var(--bs-success);
+}
+
+/* Admin dashboard enhancements */
+.admin-stat-card {
+  border-left: 4px solid var(--bs-primary);
+}
+
+.admin-stat-card .card-body {
+  padding: 1.5rem;
+}
+
+/* Search suggestions */
+.search-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
+  border-top: none;
+  border-radius: 0 0 var(--bs-border-radius) var(--bs-border-radius);
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.search-suggestion {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.search-suggestion:hover {
+  background-color: var(--bs-secondary-bg);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 2rem 0 !important;
+  }
+  
+  .hero-section h1 {
+    font-size: 2rem !important;
+  }
+  
+  .product-image {
+    height: 150px;
+  }
+  
+  .table-responsive {
+    font-size: 0.875rem;
+  }
+  
+  .btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .navbar-brand {
+    font-size: 1.25rem;
+  }
+  
+  .hero-section .display-4 {
+    font-size: 1.75rem !important;
+  }
+  
+  .card-title {
+    font-size: 1rem;
+  }
+  
+  .scroll-to-top {
+    bottom: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Print styles */
+@media print {
+  .navbar,
+  .btn,
+  .alert,
+  .scroll-to-top,
+  .modal-footer {
+    display: none !important;
+  }
+  
+  .card {
+    border: 1px solid #000 !important;
+    box-shadow: none !important;
+  }
+  
+  .container {
+    max-width: none !important;
+  }
+}
+
+/* Animation classes */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Loading spinner */
+.spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 0.25rem solid var(--bs-secondary);
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Focus indicators for accessibility */
+.btn:focus,
+.form-control:focus,
+.form-select:focus {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .card {
+    border-width: 2px;
+  }
+  
+  .btn {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
