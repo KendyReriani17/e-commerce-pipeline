@@ -32,7 +32,7 @@
             <span class="badge bg-secondary">{{ product.category_ref.name }}</span>
         </div>
         
-        <h2 class="text-success mb-3">${{ "%.2f"|format(product.price) }}</h2>
+        <h2 class="text-success mb-3">{{ product.price|currency }}</h2>
         
         <div class="mb-3">
             {% if product.stock_quantity > 0 %}
@@ -79,7 +79,7 @@
         <div class="mt-4">
             <h6>Features:</h6>
             <ul class="list-unstyled">
-                <li><i class="fas fa-shipping-fast text-primary me-2"></i>Free shipping on orders over $50</li>
+                <li><i class="fas fa-shipping-fast text-primary me-2"></i>Free shipping on orders over KES 7,500</li>
                 <li><i class="fas fa-undo text-primary me-2"></i>30-day return policy</li>
                 <li><i class="fas fa-shield-alt text-primary me-2"></i>1-year warranty included</li>
                 <li><i class="fas fa-headset text-primary me-2"></i>24/7 customer support</li>
@@ -106,7 +106,7 @@
                 
                 <div class="card-body d-flex flex-column">
                     <h6 class="card-title">{{ related_product.name }}</h6>
-                    <p class="card-text text-success font-weight-bold">${{ "%.2f"|format(related_product.price) }}</p>
+                    <p class="card-text text-success font-weight-bold">{{ related_product.price|currency }}</p>
                     <div class="mt-auto">
                         <a href="{{ url_for('product_detail', id=related_product.id) }}" class="btn btn-outline-primary btn-sm">
                             View Details

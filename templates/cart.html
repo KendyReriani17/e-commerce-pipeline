@@ -28,7 +28,7 @@
                     </div>
                     <div class="col-md-4">
                         <h6 class="mb-1">{{ item.name }}</h6>
-                        <p class="text-success mb-0">${{ "%.2f"|format(item.price) }}</p>
+                        <p class="text-success mb-0">{{ item.price|currency }}</p>
                     </div>
                     <div class="col-md-3">
                         <form method="POST" action="{{ url_for('update_cart', product_id=item.product_id) }}" class="d-flex align-items-center">
@@ -40,7 +40,7 @@
                         </form>
                     </div>
                     <div class="col-md-2">
-                        <strong class="text-success">${{ "%.2f"|format(item.price * item.quantity) }}</strong>
+                        <strong class="text-success">{{ (item.price * item.quantity)|currency }}</strong>
                     </div>
                     <div class="col-md-1">
                         <a href="{{ url_for('remove_from_cart', product_id=item.product_id) }}" 
@@ -82,30 +82,30 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between mb-2">
                     <span>Subtotal:</span>
-                    <span>${{ "%.2f"|format(total) }}</span>
+                    <span>{{ total|currency }}</span>
                 </div>
                 <div class="d-flex justify-content-between mb-2">
                     <span>Shipping:</span>
                     <span class="text-success">
-                        {% if total >= 50 %}FREE{% else %}$9.99{% endif %}
+                        {% if total >= 7500 %}FREE{% else %}KES 1,500{% endif %}
                     </span>
                 </div>
                 <div class="d-flex justify-content-between mb-2">
                     <span>Tax:</span>
-                    <span>${{ "%.2f"|format(total * 0.08) }}</span>
+                    <span>{{ (total * 0.16)|currency }}</span>
                 </div>
                 <hr>
                 <div class="d-flex justify-content-between mb-3">
                     <strong>Total:</strong>
                     <strong class="text-success">
-                        ${{ "%.2f"|format(total + (0 if total >= 50 else 9.99) + (total * 0.08)) }}
+                        {{ (total + (0 if total >= 7500 else 1500) + (total * 0.16))|currency }}
                     </strong>
                 </div>
                 
                 {% if total < 50 %}
                 <div class="alert alert-info small">
                     <i class="fas fa-info-circle me-2"></i>
-                    Add ${{ "%.2f"|format(50 - total) }} more for free shipping!
+                    Add {{ (7500 - total)|currency }} more for free shipping!
                 </div>
                 {% endif %}
                 
@@ -125,7 +125,7 @@
                 <i class="fas fa-gift fa-2x text-primary mb-2"></i>
                 <h6>Special Offer!</h6>
                 <p class="small mb-2">Get 10% off your first order with code: <strong>WELCOME10</strong></p>
-                <small class="text-muted">Valid for orders over $100</small>
+                <small class="text-muted">Valid for orders over KES 15,000</small>
             </div>
         </div>
     </div>

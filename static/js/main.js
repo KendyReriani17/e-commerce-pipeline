@@ -127,12 +127,20 @@ function initializeFormValidation() {
     const phoneInputs = document.querySelectorAll('input[name*="phone"]');
     phoneInputs.forEach(input => {
         input.addEventListener('input', function() {
-            // Simple phone formatting (US format)
+            // Kenyan phone formatting (+254 XXX XXX XXX)
             let value = this.value.replace(/\D/g, '');
+            if (value.startsWith('254')) {
+                value = value.substring(3); // Remove 254 prefix
+            } else if (value.startsWith('0')) {
+                value = value.substring(1); // Remove leading 0
+            }
+            
             if (value.length >= 6) {
-                value = value.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+                value = '+254 ' + value.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3');
             } else if (value.length >= 3) {
-                value = value.replace(/(\d{3})(\d{3})/, '($1) $2');
+                value = '+254 ' + value.replace(/(\d{3})(\d{0,3})/, '$1 $2');
+            } else if (value.length > 0) {
+                value = '+254 ' + value;
             }
             this.value = value;
         });
@@ -238,9 +246,11 @@ function handleImageError(img) {
 
 // Price formatting
 function formatPrice(price) {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-KE', {
         style: 'currency',
-        currency: 'USD'
+        currency: 'KES',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
     }).format(price);
 }
 

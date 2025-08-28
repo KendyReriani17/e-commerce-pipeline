@@ -56,7 +56,7 @@
                 <p class="card-text text-muted small flex-grow-1">{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</p>
                 <div class="mt-auto">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h4 class="text-success mb-0">${{ "%.2f"|format(product.price) }}</h4>
+                        <h4 class="text-success mb-0">{{ product.price|currency }}</h4>
                         <small class="text-muted">
                             {% if product.stock_quantity > 0 %}
                                 <i class="fas fa-check-circle text-success"></i> In Stock ({{ product.stock_quantity }})
@@ -82,7 +82,7 @@
     <div class="col-md-4 text-center mb-4">
         <i class="fas fa-shipping-fast fa-3x text-primary mb-3"></i>
         <h4>Fast Shipping</h4>
-        <p class="text-muted">Free shipping on orders over $50. Get your products delivered quickly and safely.</p>
+        <p class="text-muted">Free shipping on orders over KES 7,500. Get your products delivered quickly and safely.</p>
     </div>
     <div class="col-md-4 text-center mb-4">
         <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>

@@ -48,7 +48,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <div>
-                        <h4>${{ "%.0f"|format(stats.total_revenue) }}</h4>
+                        <h4>{{ stats.total_revenue|currency }}</h4>
                         <span>Total Revenue</span>
                     </div>
                     <i class="fas fa-dollar-sign fa-2x opacity-75"></i>
@@ -99,7 +99,7 @@
                             <tr>
                                 <td>{{ order.order_number }}</td>
                                 <td>{{ order.customer_name }}</td>
-                                <td class="text-success">${{ "%.2f"|format(order.total_amount) }}</td>
+                                <td class="text-success">{{ order.total_amount|currency }}</td>
                                 <td>
                                     <span class="badge {% if order.status == 'pending' %}bg-warning{% elif order.status == 'confirmed' %}bg-info{% elif order.status == 'shipped' %}bg-primary{% elif order.status == 'delivered' %}bg-success{% else %}bg-secondary{% endif %}">
                                         {{ order.status.title() }}

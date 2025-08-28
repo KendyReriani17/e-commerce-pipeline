@@ -28,6 +28,11 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
 # Initialize the app with the extension
 db.init_app(app)
 
+@app.template_filter('currency')
+def currency_format(amount):
+    """Format currency for Kenyan Shillings with commas"""
+    return f"KES {amount:,.0f}"
+
 with app.app_context():
     # Import models to ensure tables are created
     import models
