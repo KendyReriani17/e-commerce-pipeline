@@ -12,28 +12,31 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
-                sh 'docker build -t ecommerce-app .'
+                bat 'docker build -t ecommerce-app .'
             }
         }
 
         stage('Run Tests') {
             steps {
                 echo 'Running tests...'
-                // adjust this depending on your test command
-                sh 'docker run --rm ecommerce-app pytest || echo "No tests found"'
+                // Replace pytest with your test command if needed
+                bat 'docker run --rm ecommerce-app pytest || echo "No tests found"'
             }
         }
 
         stage('Clean Up') {
             steps {
                 echo 'Cleaning up...'
-                sh 'docker system prune -f'
+                bat 'docker system prune -f'
             }
         }
     }
 
     post {
         always {
+            echo 'Pipeline finished.'
+        }
+        success {
             echo 'Pipeline successful.'
         }
         failure {
