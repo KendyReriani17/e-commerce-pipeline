@@ -16,17 +16,19 @@ pipeline {
             }
         }
 
-        stage('Run Tests') {
+        stage('Run Docker Container') {
             steps {
-                echo 'Running tests...'
-                // Replace pytest with your test command if needed
-                bat 'docker run --rm ecommerce-app pytest || echo "No tests found"'
+                echo 'Running the Docker container...'
+                bat '''
+                docker ps -q --filter "name=ecommerce-app" | findstr . && docker rm -f ecommerce-app
+                docker run -d -p 8000:8000 --name ecommerce-app ecommerce-app
+                '''
             }
         }
 
         stage('Clean Up') {
             steps {
-                echo 'Cleaning up...'
+                echo 'Cleaning up unused Docker resources...'
                 bat 'docker system prune -f'
             }
         }
@@ -34,10 +36,7 @@ pipeline {
 
     post {
         always {
-            echo 'Pipeline finished.'
-        }
-        success {
-            echo 'Pipeline successful.'
+            echo 'Pipeline successfull.'
         }
         failure {
             echo 'Pipeline failed.'
