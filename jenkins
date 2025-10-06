@@ -16,14 +16,17 @@ pipeline {
             }
         }
 
-        stage('Run Docker Container') {
-            steps {
-                echo 'Running the Docker container...'
-                bat '''
-                docker ps -q --filter "name=ecommerce-app" | findstr . && docker rm -f ecommerce-app
-                docker run -d -p 8000:8000 --name ecommerce-app ecommerce-app
-                '''
-            }
+     stage('Run Docker Container') {
+    steps {
+        echo 'Running the Docker container...'
+        bat '''
+        docker stop ecommerce-app || echo "No running container"
+        docker rm ecommerce-app || echo "No existing container"
+        docker run -d -p 8000:8000 --name ecommerce-app ecommerce-app
+        '''
+    }
+}
+
         }
 
         stage('Clean Up') {
