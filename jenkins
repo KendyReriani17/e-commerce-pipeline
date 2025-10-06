@@ -5,7 +5,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 echo 'Cloning repository...'
-                git branch: 'dev', url: 'https://github.com/peterkendy/e-commerce-pipeline.git'
+                git branch: 'main', url: 'https://github.com/KendyReriani17/e-commerce-pipeline.git'
             }
         }
 
