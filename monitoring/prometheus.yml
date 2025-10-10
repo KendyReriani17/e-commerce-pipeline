@@ -6,6 +6,6 @@ scrape_configs:
     static_configs:
       - targets: ['prometheus:9090']
 
-  - job_name: 'mybasket-app'
+  - job_name: 'ecommerce-app'
     static_configs:
-      - targets: ['host.docker.internal:8000']  # Your app running locally
+      - targets: ['ecommerce-app:8000']
