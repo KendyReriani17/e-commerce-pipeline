@@ -85,8 +85,12 @@ resource "aws_instance" "ecommerce_server" {
 
   tags = { Name = "ecommerce-app-server" }
 }
+<<<<<<< HEAD
 output "instance_public_ip" {
   description = "Public IP of the e-commerce EC2 instance"
   value       = aws_instance.ecommerce_server.public_ip
 }
+=======
+
+>>>>>>> main
 
