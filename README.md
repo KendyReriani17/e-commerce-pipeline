@@ -54,6 +54,20 @@ The project demonstrates modern DevOps practices — from **Infrastructure as Co
 
 ---
 
+## How to Run Locally  
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/KendyReriani17/e-commerce-pipeline.git
+cd e-commerce-pipeline
+
+# 2. Build and run the app
+docker build -t ecommerce-app .
+docker run -d -p 8000:8000 --name ecommerce-app ecommerce-app
+
+# 3. (Optional) Start monitoring stack
+docker-compose -f monitoring/docker-compose.yml up -d
+
  
 
 
