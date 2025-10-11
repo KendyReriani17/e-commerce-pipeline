@@ -2,7 +2,7 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# 1. VPC
+
 resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_support   = true
@@ -10,14 +10,14 @@ resource "aws_vpc" "main" {
   tags = { Name = "ecommerce-vpc" }
 }
 
-# 2. Subnet
+
 resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.1.0/24"
   map_public_ip_on_launch = true
   tags = { Name = "ecommerce-subnet" }
 }
-# --- Internet Gateway ---
+
 resource "aws_internet_gateway" "ecommerce-igw" {
   vpc_id = aws_vpc.main.id
 
@@ -26,7 +26,7 @@ resource "aws_internet_gateway" "ecommerce-igw" {
   }
 }
 
-# --- Route Table ---
+
 resource "aws_route_table" "public-rt" {
   vpc_id = aws_vpc.main.id
 
@@ -40,13 +40,13 @@ resource "aws_route_table" "public-rt" {
   }
 }
 
-# --- Route Table Association ---
+
 resource "aws_route_table_association" "public_assoc" {
   subnet_id      = aws_subnet.public.id
   route_table_id = aws_route_table.public-rt.id
 }
 
-# 3. Security Group
+
 resource "aws_security_group" "allow_http_ssh" {
   vpc_id = aws_vpc.main.id
 
@@ -74,19 +74,16 @@ resource "aws_security_group" "allow_http_ssh" {
   }
 }
 
-# 4. EC2 Instance
+
 
 resource "aws_instance" "ecommerce_server" {
   ami           = "ami-052064a798f08f0d3"
   instance_type = "t2.micro"
-  subnet_id     = aws_subnet.public.id   # <--- dynamic reference
+  subnet_id     = aws_subnet.public.id   
   key_name      = "ecommerce-key"
   vpc_security_group_ids = [aws_security_group.allow_http_ssh.id]
 
   tags = { Name = "ecommerce-app-server" }
 }
-output "instance_public_ip" {
-  description = "Public IP of the e-commerce EC2 instance"
-  value       = aws_instance.ecommerce_server.public_ip
-}
+
 
