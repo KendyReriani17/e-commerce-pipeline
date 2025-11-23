@@ -1,6 +1,5 @@
 <div align="center">
 
-# 🚀 Tech Stack
 
 ![Flask](https://img.shields.io/badge/Flask-Python-blue?style=for-the-badge&logo=flask)
 ![Docker](https://img.shields.io/badge/Docker-Containerization-2496ED?style=for-the-badge&logo=docker)
